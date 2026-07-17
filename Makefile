@@ -19,6 +19,7 @@ ps:
 test:
 	cd ingestion && uv run pytest
 	cd api && uv run pytest
+	$(COMPOSE) run --rm --no-deps --entrypoint python3 spark-ohlcv -m pytest tests/ -q
 
 psql:
 	$(COMPOSE) exec timescaledb psql -U $${POSTGRES_USER:-stock} -d $${POSTGRES_DB:-stocks}

@@ -27,7 +27,8 @@ service = one container. Full blueprint: `docs/project-structure-plan.md`.
 
 - `make up` / `make down` / `make clean` (clean wipes volumes → re-runs SQL init)
 - `make logs`, `make ps`, `make topics`, `make psql`
-- Tests per service: `cd <service> && uv run pytest`
+- Tests per service: `cd <service> && uv run pytest`; Spark tests run in-container:
+  `docker compose run --rm --no-deps --entrypoint python3 spark-ohlcv -m pytest tests/ -q`
 - No `make` on this machine? Use `docker compose up -d --build` etc. directly.
 
 ## Conventions

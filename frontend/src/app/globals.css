@@ -1,0 +1,141 @@
+:root {
+  --background: #0b0f17;
+  --surface: #111827;
+  --border: #1f2937;
+  --foreground: #e5e7eb;
+  --muted: #9ca3af;
+  --accent: #26a69a;
+  --down: #ef5350;
+  color-scheme: dark;
+}
+
+* {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+}
+
+html,
+body {
+  max-width: 100vw;
+  overflow-x: hidden;
+}
+
+body {
+  min-height: 100vh;
+  color: var(--foreground);
+  background: var(--background);
+  font-family: var(--font-geist-sans), Arial, Helvetica, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+.dashboard {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 2rem 1.5rem 3rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.dashboard-header h1 {
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+.dashboard-header p {
+  color: var(--muted);
+  font-size: 0.875rem;
+  margin-top: 0.25rem;
+}
+
+.symbol-selector {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.symbol-selector button {
+  background: var(--surface);
+  color: var(--muted);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 0.4rem 1.1rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: color 120ms ease, border-color 120ms ease;
+}
+
+.symbol-selector button:hover {
+  color: var(--foreground);
+}
+
+.symbol-selector button[data-active] {
+  color: var(--background);
+  background: var(--accent);
+  border-color: var(--accent);
+}
+
+.chart-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 1rem 1rem 0.5rem;
+}
+
+.chart-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0 0.25rem 0.75rem;
+}
+
+.chart-header h2 {
+  font-size: 1.125rem;
+  font-weight: 600;
+}
+
+.price {
+  font-family: var(--font-geist-mono), monospace;
+  font-size: 1.125rem;
+  font-weight: 600;
+}
+
+.price-up {
+  color: var(--accent);
+}
+
+.price-down {
+  color: var(--down);
+}
+
+.live-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--accent);
+  margin-left: auto;
+  animation: pulse 1.6s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.25;
+  }
+}
+
+.chart-container {
+  width: 100%;
+  height: 480px;
+}
+
+.chart-error {
+  color: var(--down);
+  font-size: 0.875rem;
+  padding: 0 0.25rem 0.75rem;
+}
