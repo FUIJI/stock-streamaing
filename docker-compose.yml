@@ -101,6 +101,72 @@ services:
         condition: service_healthy
     restart: unless-stopped
 
+  spark-ohlcv:
+    build: ./processing/spark
+    command:
+      - /opt/spark/bin/spark-submit
+      - --master=local[*]
+      - --driver-memory=1g
+      - /app/jobs/ohlcv_aggregation.py
+    environment: &spark-env
+      KAFKA_BROKER: redpanda:9092
+      TRADES_TOPIC: ${TRADES_TOPIC:-trades.raw}
+      PG_HOST: timescaledb
+      PG_PORT: "5432"
+      PG_DB: ${POSTGRES_DB:-stocks}
+      PG_USER: ${POSTGRES_USER:-stock}
+      PG_PASSWORD: ${POSTGRES_PASSWORD:-stock_dev_password}
+      S3_ENDPOINT: http://minio:9000
+      S3_ACCESS_KEY: ${MINIO_ROOT_USER:-minioadmin}
+      S3_SECRET_KEY: ${MINIO_ROOT_PASSWORD:-minioadmin}
+      CHECKPOINT_LOCATION: s3a://checkpoints/ohlcv_aggregation
+    depends_on:
+      redpanda:
+        condition: service_healthy
+      timescaledb:
+        condition: service_healthy
+      minio-init:
+        condition: service_completed_successfully
+    restart: unless-stopped
+
+  spark-bronze:
+    build: ./processing/spark
+    command:
+      - /opt/spark/bin/spark-submit
+      - --master=local[*]
+      - --driver-memory=1g
+      - /app/jobs/trades_to_bronze.py
+    environment:
+      <<: *spark-env
+      BRONZE_PATH: s3a://bronze/trades
+      CHECKPOINT_LOCATION: s3a://checkpoints/trades_to_bronze
+    depends_on:
+      redpanda:
+        condition: service_healthy
+      minio-init:
+        condition: service_completed_successfully
+    restart: unless-stopped
+
+  api:
+    build: ./api
+    ports:
+      - "8000:8000"
+    environment:
+      PG_HOST: timescaledb
+      PG_PORT: "5432"
+      PG_DB: ${POSTGRES_DB:-stocks}
+      PG_USER: ${POSTGRES_USER:-stock}
+      PG_PASSWORD: ${POSTGRES_PASSWORD:-stock_dev_password}
+      KAFKA_BROKER: redpanda:9092
+      TRADES_TOPIC: ${TRADES_TOPIC:-trades.raw}
+      CORS_ORIGINS: ${CORS_ORIGINS:-http://localhost:3000}
+    depends_on:
+      redpanda:
+        condition: service_healthy
+      timescaledb:
+        condition: service_healthy
+    restart: unless-stopped
+
 volumes:
   redpanda-data:
   timescale-data:

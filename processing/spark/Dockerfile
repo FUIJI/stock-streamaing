@@ -15,5 +15,8 @@ ADD https://repo1.maven.org/maven2/com/amazonaws/aws-java-sdk-bundle/1.12.262/aw
 RUN chmod 644 /opt/spark/jars/*.jar
 
 WORKDIR /app
+# /app for `from jobs...` imports; Spark's python + py4j so pytest can import pyspark
+# without going through spark-submit.
+ENV PYTHONPATH=/app:/opt/spark/python:/opt/spark/python/lib/py4j-0.10.9.7-src.zip
 COPY jobs/ jobs/
 COPY tests/ tests/
